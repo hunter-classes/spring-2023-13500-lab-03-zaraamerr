@@ -48,3 +48,40 @@ double get_east_storage(std::string userdate){
   return 0; //end
 
 }
+double get_min_east() {
+  // Open and read data file
+  std::ifstream fin("Current_Reservoir_Levels.tsv");
+  if (fin.fail()) {
+    std::cerr << "File cannot be opened for reading." << std::endl;
+    exit(1); // Exit if failed to open the file
+  }
+
+  // Skip the header line
+  std::string junk;
+  getline(fin, junk);
+
+  // Store east storage data for 2018 in a vector
+  std::vector<double> east_storage_2018;
+  double eastSt = 0.0;
+  while (fin >> junk >> eastSt) {
+    east_storage_2018.push_back(eastSt);
+    fin.ignore(INT_MAX, '\n');
+  }
+
+  fin.close();
+
+  if (east_storage_2018.empty()) { // Check if any data was found for 2018
+    std::cerr << "Error: No data found for 2018." << std::endl;
+    return 0;
+  }
+
+  // Find the minimum east storage in 2018
+  double min_east_storage = east_storage_2018[0];
+  for (const auto& storage : east_storage_2018) {
+    if (storage < min_east_storage) {
+      min_east_storage = storage;
+    }
+  }
+
+  return min_east_storage;
+}
