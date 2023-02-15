@@ -14,5 +14,8 @@ int main(){
     //Test Trial B
     double minstor = get_min_east();
     std::cout << "Minimum East Basin storage in 2018: " << minstor << " billion gallons" << std::endl;
+    //Test Trial C
+    double maxstor = get_max_east();
+    std::cout << "Maximum East Basin storage in 2018: " << maxstor << " billion gallons" << std::endl;
     return 0;
 }
