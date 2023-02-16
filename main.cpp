@@ -20,8 +20,8 @@ int main(){
     std::cout << "On 03/03/2018 the " << compare_basins("03/03/2018") << " basin storage is greater." << std::endl;
     std::cout << "On 09/25/2018 the " << compare_basins("09/25/2018") << " basin storage is greater." << std::endl;
     // 2 test trials for task d
-    std::cout << "The West Basin elevation data printed in reverse chronological order during 04/03/2018 to 04/10/2018: " << std::endl;
+    std::cout << "The West Basin elevation data printed in reverse chronological order during 04/03/2018 to 04/05/2018: " << std::endl;
     reverse_order("04/03/2018", "04/05/2018");
-    std::cout << "The West Basin elevation data printed in reverse chronological order during 07/07/2018 to 07/14/2018: " << std::endl;
+    std::cout << "The West Basin elevation data printed in reverse chronological order during 07/07/2018 to 07/09/2018: " << std::endl;
     reverse_order("07/07/2018", "07/09/2018");
 }
