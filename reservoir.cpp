@@ -2,127 +2,150 @@
 #include <fstream>
 #include <cstdlib>
 #include <climits>
-#include <vector>
 #include "reservoir.h"
 
-double get_east_storage(std::string userdate){
-  //Open and read data file
-
-  std::ifstream fin("Current_Reservoir_Levels.tsv"); 
-  if (fin.fail()) { 
-    std::cerr << "File cannot be opened for reading." << std::endl;
-    exit(1); // exit if failed to open the file
-  }
-
-  //The first line in the file is a header line. 
-  //We have to skip it before we get to process the actual data. 
-  //We can do that by reading that line into a temporary variable 
-  //that we can call junk:
-
-  std::string junk;        // new string variable
-  getline(fin, junk);     // read one line from the file 
-
-  //Read file line by line and store the east storage values in an array/vector
-  
-  std::vector < std::pair < std::string, double >> storage; //create vector that can store a pair of values: date string and east storage double
-  std::string extracted_date; //the dates extracted from the tsv file
-  double eastSt = 0.0; 
-
-  while(fin >> extracted_date >> eastSt) { 
-    // this loop reads the file line-by-line
-    storage.push_back(std::make_pair(extracted_date, eastSt)); //adds date and east storage level as pair values to vector
-    fin.ignore(INT_MAX, '\n'); //skips to the end of line, //ignoring the remaining columns 
-  }
-  // Loop through the array to find the match between user date and date extracted from table
-  for (const auto& s : storage) { //iterate thru the elements of the vector
-    if (s.first == userdate) { //checks to see if date matches user date
-      return s.second; //if true, print east storage thats associated w that date
+//task A
+double get_east_storage(std::string date)
+{
+    std::ifstream fin("Current_Reservoir_Levels.tsv"); //read file
+    if (fin.fail()) //if file cannot be opened or is unreadable
+    {
+        std::cerr << "File cannot be opened for reading." << std::endl;
+        exit(1); //output error and terminate program
     }
-  }
+    //Remember that the first line in the file is a header line. We have to skip it before we
+    //get to process the actual data. We can do that by reading that line into a temporary variable
+    //that we can call junk:
+    std::string junk;
+    std::getline(fin, junk); 
 
-  // If the date is not found, output an error message
-  std::cerr << "Error: Invalid date." << std::endl;
+    std::string extracted_date; //string that will store dates from file
+    double eastSt; //double that will store east storage values from file
 
-  fin.close(); //close tsv file
+    while (fin >> extracted_date >> eastSt) //reads file line by line and stores dates and east storage into their respective variables
+    {
+        if (date == extracted_date) //if the hardcoded date equals a date in the file
+        {
+            return eastSt; //return the value of east basin storage associated with that particular date
+        }
 
-  return 0; //end
+        fin.ignore(INT_MAX, '\n'); //skips to the end of line, ignoring the remaining columns 
+    }
 
+    fin.close(); //close file
+    return 0; //end 
 }
 
-double get_min_east() {
-  // Open and read data file
-  std::ifstream fin("Current_Reservoir_Levels.tsv");
-  if (fin.fail()) {
-    std::cerr << "File cannot be opened for reading." << std::endl;
-    exit(1); // Exit if failed to open the file
-  }
-
-  // Skip the header line
-  std::string junk;
-  getline(fin, junk);
-
-  // Store east storage data for 2018 in a vector
-  std::vector<double> east_storage_2018;
-  double eastSt = 0.0;
-  while (fin >> junk >> eastSt) {
-    east_storage_2018.push_back(eastSt);
-    fin.ignore(INT_MAX, '\n');
-  }
-
-  fin.close();
-
-  if (east_storage_2018.empty()) { // Check if any data was found for 2018
-    std::cerr << "Error: No data found for 2018." << std::endl;
-    return 0;
-  }
-
-  // Find the minimum east storage in 2018
-  double min_east_storage = east_storage_2018[0];
-  for (const auto& storage : east_storage_2018) {
-    if (storage < min_east_storage) {
-      min_east_storage = storage;
+ //task B part 1
+double get_min_east()
+{
+    std::ifstream fin("Current_Reservoir_Levels.tsv"); //read file
+    if (fin.fail()) //if file cannot be opened or is unreadable
+    {
+        std::cerr << "File cannot be opened for reading." << std::endl;
+        exit(1); //output error and terminate program
     }
-  }
 
-  return min_east_storage;
+    //Remember that the first line in the file is a header line. We have to skip it before we
+    //get to process the actual data. We can do that by reading that line into a temporary variable
+    //that we can call junk:
+    std::string junk;
+    std::getline(fin, junk);
+
+    std::string extracted_date; //string that will store dates from file
+    double eastSt = 0.0; //double that will store east basin storage values from file, initially set as 0.0 and will be determined later in the program
+    double minstor = 100.0; //double that will store the minimum value of the east basin storage, initially set as 100.0 and will be determined later in the program
+
+    while (fin >> extracted_date >> eastSt) //reads the file line by line and stores dates and east storage values into their respective variables
+    {
+        if (eastSt < minstor) //if the current value of the east basin storage is less than the current minimum value of the east basin storage
+        {
+            minstor = eastSt; //set the minimum east basin storage value to the current value of east basin storage
+        }
+
+        fin.ignore(INT_MAX, '\n'); //skips to the end of line, ignoring the remaining columns 
+    }
+
+    fin.close(); //close file
+    return minstor; //return the minimum east basin storage value
 }
 
-double get_max_east() {
-  // Open and read data file
-  std::ifstream fin("Current_Reservoir_Levels.tsv");
-  if (fin.fail()) {
-    std::cerr << "File cannot be opened for reading." << std::endl;
-    exit(1); // Exit if failed to open the file
-  }
-
-  // Skip the header line
-  std::string junk;
-  getline(fin, junk);
-
-  // Store east storage data for 2018 in a vector
-  std::vector<double> east_storage_2018;
-  double eastSt = 0.0;
-  while (fin >> junk >> eastSt) {
-    east_storage_2018.push_back(eastSt);
-    fin.ignore(INT_MAX, '\n');
-  }
-
-  fin.close();
-
-  if (east_storage_2018.empty()) { // Check if any data was found for 2018
-    std::cerr << "Error: No data found for 2018." << std::endl;
-    return 0;
-  }
-
-  // Find the minimum east storage in 2018
-  double max_east_storage = east_storage_2018[0];
-  for (const auto& storage : east_storage_2018) {
-    if (storage > max_east_storage) {
-      max_east_storage = storage;
+//task b part 2
+double get_max_east()
+{
+    std::ifstream fin("Current_Reservoir_Levels.tsv"); //read file
+    if (fin.fail()) //if file cannot be opened or is unreadable
+    {
+        std::cerr << "File cannot be opened for reading." << std::endl;
+        exit(1); //output error and terminate the program
     }
-  }
 
-  return max_east_storage;
+    //Remember that the first line in the file is a header line. We have to skip it before we
+    //get to process the actual data. We can do that by reading that line into a temporary variable
+    //that we can call junk:
+    std::string junk;
+    std::getline(fin, junk);
+
+    std::string extracted_date; //string that will store dates from the file
+    double eastSt = 0.0; //double that will store east basin storage values from file, initially set as 0.0 and will be determined later in the program
+    double maxstor= 0.0; //double that will store the maximum east basin storage values from file, initially set as 0.0 and will be determined later in the program
+
+    while (fin >> extracted_date >> eastSt) //reads the file line by line and stores dates and east storage basin values into their respective variables
+    {
+        if (eastSt > maxstor) //if the current value of the east basin storage is greater than the current maximum east basin storage value
+        {
+            maxstor = eastSt; //set the maximum east basin storage value to the current value of east basin storage
+        }
+
+        fin.ignore(INT_MAX, '\n'); //skips to the end of line, ignoring the remaining columns 
+    }
+
+    fin.close(); // close file
+    return maxstor; //return maximum east basin storage value
 }
 
+std::string compare_basins(std::string date)
+{
+   std::ifstream fin("Current_Reservoir_Levels.tsv"); //read file
+    if (fin.fail()) //if file cannot be opened or is unreadable
+    {
+        std::cerr << "File cannot be opened for reading." << std::endl;
+        exit(1); //output error and terminate the program
+    }
 
+    //Remember that the first line in the file is a header line. We have to skip it before we
+    //get to process the actual data. We can do that by reading that line into a temporary variable
+    //that we can call junk:
+    std::string junk;
+    std::getline(fin, junk);
+
+    std::string extracted_date; //string that will store dates from the file
+    double eastSt; //double that will store east basin storage values from file
+    double eastEl; //double that will store east elevation values from file
+    double westSt; //double that will store west basin storage values from the file
+    double westEl; //double that will store west elevation values from the file
+
+    while (fin >> extracted_date >> eastSt >> eastEl >> westSt >> westEl) //reads the file line by line and stores dates, east storage values, east elevation values, west storage values, and west elevation values into their respective variables
+    {
+        if (date == extracted_date) //if the hardcoded date matches a date in the file
+        {
+            if (eastEl > westEl) //if the east elevation is greater than the west elevation
+            {
+                return "East";
+            }
+            else if (westEl > eastEl) //if the west elevation is greater than the east elevation
+            {
+                return "West";
+            }
+            else //otherwise, if both values are equal
+            {
+                return "Equal";
+            }
+        }
+
+        fin.ignore(INT_MAX, '\n');  //skips to the end of line, ignoring the remaining columns 
+    }
+
+    fin.close(); //close file
+    return 0; //end
+}
